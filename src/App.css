@@ -1,0 +1,33 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --black:   #0d0d0d;
+  --charcoal:#1a1a1a;
+  --gold:    #c9a227;
+  --gold-lt: #e8bf45;
+  --white:   #ffffff;
+  --gray:    #888888;
+  --fb-blue: #1877F2;
+  --ig-grad: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--black);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
