@@ -28,7 +28,7 @@ app.get('/auth/social/meta/connect', (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.META_APP_ID,
     redirect_uri: 'https://topdawg-os.onrender.com/auth/social/meta/callback',
-    scope: 'pages_show_list,pages_read_engagement,pages_read_user_content,read_insights,public_profile',
+    scope: 'pages_show_list,pages_read_engagement,pages_read_user_content,read_insights,instagram_manage_insights,public_profile',
     response_type: 'code',
   });
   res.redirect(`https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`);
