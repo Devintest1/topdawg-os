@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Header from '../components/Header.jsx'
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'https://topdawg-os.onrender.com'
 
@@ -8,12 +9,7 @@ const css = `
   html,body,#root{height:100%;background:#07070E;color:#EEEEF5;font-family:'Inter',sans-serif}
   .home{height:100vh;display:flex;flex-direction:column}
 
-  .home-hdr{display:flex;align-items:center;gap:12px;padding:12px 24px;border-bottom:1px solid rgba(255,255,255,.06);background:#07070E;flex-shrink:0;animation:hFadeUp .35s ease forwards}
-  .h-brand{display:flex;align-items:center;gap:10px}
-  .h-logo{width:52px;height:52px;object-fit:contain;filter:invert(1)}
-  .h-wordmark{font-family:'Antonio',sans-serif;font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#EEEEF5}
-  .h-os{font-size:10px;font-weight:600;background:rgba(201,162,39,.12);color:#c9a227;border:1px solid rgba(201,162,39,.28);border-radius:4px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;margin-left:2px}
-  .h-div{flex:1}
+
 
   .home-main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:36px;padding:48px 24px 24px;overflow:hidden;animation:hFadeUp .4s ease .1s forwards;opacity:0}
   .sec-lbl{font-size:10px;font-weight:600;color:#50506A;letter-spacing:.14em;text-transform:uppercase;text-align:center}
@@ -78,16 +74,7 @@ export default function Home() {
       <style>{css}</style>
       <div className="home">
 
-        <header className="home-hdr">
-          <div className="h-brand">
-            <img className="h-logo" src="/logo.png" alt="Top Dawg" />
-            <div style={{display:'flex',alignItems:'center',gap:6}}>
-              <span className="h-wordmark">Top Dawg Moving LLC</span>
-              <span className="h-os">OS</span>
-            </div>
-          </div>
-          <div className="h-div" />
-        </header>
+        <Header />
 
         <main className="home-main">
           <div className="sec-lbl">Select a workflow</div>

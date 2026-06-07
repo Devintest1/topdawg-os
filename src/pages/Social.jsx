@@ -1,116 +1,55 @@
-import { useNavigate } from 'react-router-dom'
+import Header from '../components/Header.jsx'
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'https://topdawg-os.onrender.com'
 
-export default function Social() {
-  const navigate = useNavigate()
+const css = `
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body,#root{height:100%;background:#07070E;color:#EEEEF5;font-family:'Inter',sans-serif}
+  .social-page{min-height:100vh;display:flex;flex-direction:column;background:#07070E}
+  .social-main{flex:1;padding:36px 24px;display:flex;flex-direction:column;gap:20px;max-width:900px;width:100%;margin:0 auto;animation:hFadeUp .4s ease .1s forwards;opacity:0}
+  .sec-lbl{font-size:10px;font-weight:600;color:#50506A;letter-spacing:.14em;text-transform:uppercase}
+  .connect-card{background:#0F0F1C;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:28px}
+  .connect-card h2{font-size:14px;font-weight:600;color:#EEEEF5;margin-bottom:6px}
+  .connect-card p{font-size:12px;color:#50506A;margin-bottom:20px}
+  .platform-row{display:flex;gap:10px;flex-wrap:wrap}
+  .fb-connect-btn{display:flex;align-items:center;gap:8px;background:#1877F2;color:#fff;font-weight:700;font-size:13px;padding:11px 20px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;transition:opacity .15s}
+  .fb-connect-btn:hover{opacity:.88}
+  .placeholder-card{background:#0F0F1C;border:1px dashed rgba(255,255,255,.07);border-radius:12px;padding:56px 24px;text-align:center}
+  .placeholder-card p{font-size:13px;color:#30304A}
+  @keyframes hFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+`
 
+export default function Social() {
   function connectMeta() {
     window.location.href = `${BACKEND}/auth/social/meta/connect`
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.topBar}>
-        <button style={styles.backBtn} onClick={() => navigate('/')}>← Home</button>
-        <h1 style={styles.title}>Digital Presence</h1>
-      </div>
+    <>
+      <style>{css}</style>
+      <div className="social-page">
+        <Header />
+        <main className="social-main">
+          <div className="sec-lbl">Digital Presence</div>
 
-      <div style={styles.connectSection}>
-        <p style={styles.instructions}>
-          Connect your accounts to start seeing your analytics.
-        </p>
-        <div style={styles.platformRow}>
-          <button style={styles.fbBtn} onClick={connectMeta}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{marginRight:8}}>
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-            </svg>
-            Connect Facebook &amp; Instagram
-          </button>
-        </div>
-      </div>
+          <div className="connect-card">
+            <h2>Connect your accounts</h2>
+            <p>One click connects both Facebook and Instagram.</p>
+            <div className="platform-row">
+              <button className="fb-connect-btn" onClick={connectMeta}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Connect Facebook &amp; Instagram
+              </button>
+            </div>
+          </div>
 
-      <div style={styles.placeholder}>
-        <p style={styles.placeholderText}>
-          Your analytics will appear here after connecting.
-        </p>
+          <div className="placeholder-card">
+            <p>Analytics will appear here after connecting your accounts.</p>
+          </div>
+        </main>
       </div>
-    </div>
+    </>
   )
-}
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: 'linear-gradient(160deg, #0d0d0d 0%, #1a1a1a 100%)',
-    padding: '32px 24px',
-    fontFamily: "'Inter', sans-serif",
-  },
-  topBar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 20,
-    marginBottom: 40,
-    maxWidth: 900,
-    margin: '0 auto 40px',
-  },
-  backBtn: {
-    background: 'transparent',
-    color: '#c9a227',
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    border: '1px solid #c9a227',
-    borderRadius: 8,
-    padding: '8px 14px',
-  },
-  title: {
-    fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: 28,
-    letterSpacing: 2,
-    color: '#ffffff',
-  },
-  connectSection: {
-    maxWidth: 900,
-    margin: '0 auto 40px',
-    background: '#1a1a1a',
-    border: '1px solid #2a2a2a',
-    borderRadius: 16,
-    padding: 32,
-  },
-  instructions: {
-    color: '#888',
-    fontSize: 14,
-    marginBottom: 20,
-  },
-  platformRow: {
-    display: 'flex',
-    gap: 12,
-    flexWrap: 'wrap',
-  },
-  fbBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    background: '#1877F2',
-    color: '#fff',
-    fontWeight: 700,
-    fontSize: 14,
-    padding: '12px 22px',
-    borderRadius: 10,
-    border: 'none',
-    cursor: 'pointer',
-  },
-  placeholder: {
-    maxWidth: 900,
-    margin: '0 auto',
-    background: '#1a1a1a',
-    border: '1px dashed #2a2a2a',
-    borderRadius: 16,
-    padding: 60,
-    textAlign: 'center',
-  },
-  placeholderText: {
-    color: '#444',
-    fontSize: 14,
-  },
 }
