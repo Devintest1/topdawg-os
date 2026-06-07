@@ -1,146 +1,181 @@
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.png'
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL || 'https://topdawg-os.onrender.com'
 
+const css = `
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body,#root{height:100%;background:#07070E;color:#EEEEF5;font-family:'Inter',sans-serif}
+  .home{height:100vh;display:flex;flex-direction:column}
+
+  .home-hdr{display:flex;align-items:center;gap:12px;padding:12px 24px;border-bottom:1px solid rgba(255,255,255,.06);background:#07070E;flex-shrink:0;animation:hFadeUp .35s ease forwards}
+  .h-brand{display:flex;align-items:center;gap:10px}
+  .h-logo{width:52px;height:52px;object-fit:contain;filter:invert(1)}
+  .h-wordmark{font-family:'Antonio',sans-serif;font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#EEEEF5}
+  .h-os{font-size:10px;font-weight:600;background:rgba(201,162,39,.12);color:#c9a227;border:1px solid rgba(201,162,39,.28);border-radius:4px;padding:2px 7px;letter-spacing:.08em;text-transform:uppercase;margin-left:2px}
+  .h-div{flex:1}
+
+  .home-main{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:36px;padding:48px 24px 24px;overflow:hidden;animation:hFadeUp .4s ease .1s forwards;opacity:0}
+  .sec-lbl{font-size:10px;font-weight:600;color:#50506A;letter-spacing:.14em;text-transform:uppercase;text-align:center}
+
+  .feature-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:860px;width:100%}
+
+  .fb{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 20px;background:#0F0F1C;border:1px solid rgba(255,255,255,.07);border-radius:12px;cursor:pointer;text-decoration:none;color:inherit;width:180px;min-height:120px;transition:all .18s ease;position:relative;overflow:hidden;font-family:inherit;text-align:center;border:none}
+  .fb::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,.5),transparent);opacity:0;transition:opacity .18s}
+  .fb:hover,.fb:active{background:#141420;border-color:rgba(201,162,39,.28) !important;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 1px rgba(201,162,39,.08)}
+  .fb:active{transform:translateY(0)}
+  .fb:hover::before{opacity:1}
+  .fb-ic{width:32px;height:32px;border-radius:8px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .fb-label{font-size:13px;font-weight:600;color:#EEEEF5;line-height:1.2}
+  .fb-desc{font-size:11px;color:#50506A;line-height:1.3;padding:6px 7px;background:rgba(15,15,28,.55);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.4);align-self:stretch;text-align:center}
+  .fb-arrow{margin-top:auto;font-size:11px;color:#c9a227;font-weight:500;display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .18s}
+  .fb:hover .fb-arrow{opacity:1}
+
+  .fb.soon{cursor:default;opacity:.4;pointer-events:none}
+  .fb.soon .fb-ic{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+  .soon-badge{font-size:9px;font-weight:700;background:rgba(255,255,255,.05);color:#50506A;border:1px solid rgba(255,255,255,.07);border-radius:3px;padding:1px 5px;letter-spacing:.06em;text-transform:uppercase;position:absolute;top:12px;right:12px}
+
+  .fb-wrap{display:flex;flex-direction:column;gap:8px;width:180px;min-height:120px}
+  .fb-chevron{margin-top:auto;font-size:11px;color:#c9a227;line-height:1}
+
+  .dp-wrap{position:relative}
+  .dp-card{cursor:pointer;border:1px solid rgba(255,255,255,.07) !important}
+  .dp-card.pay-open{background:#141420 !important;border-color:rgba(201,162,39,.35) !important}
+  .dp-chevron-btn{background:none;border:none;font-size:11px;color:#c9a227;line-height:1;cursor:pointer;padding:6px 12px;border-radius:6px;font-family:inherit;transition:background .15s;margin-top:auto;align-self:center}
+  .dp-chevron-btn:hover{background:rgba(201,162,39,.12)}
+  .dp-dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:200;display:flex;flex-direction:column;gap:8px;animation:hFadeUp .15s ease}
+  .fb-sub{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0F0F1C;border:1px solid rgba(201,162,39,.18);border-radius:10px;cursor:pointer;transition:all .15s;animation:hFadeUp .15s ease;width:100%}
+  .fb-sub:hover{background:#141420;border-color:rgba(201,162,39,.35)}
+  .fb-sub-ic{width:30px;height:30px;border-radius:7px;background:rgba(201,162,39,.1);border:1px solid rgba(201,162,39,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .fb-sub-name{font-size:13px;font-weight:600;color:#EEEEF5}
+  .fb-sub-desc{font-size:10px;color:#50506A;margin-top:1px}
+
+  @keyframes hFadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(min-width:601px){
+    .home-hdr{justify-content:center;position:relative}
+    .h-brand{flex-direction:column;align-items:center;gap:5px}
+    .h-div{display:none}
+  }
+`
+
 export default function Home() {
   const navigate = useNavigate()
+  const [socialOpen, setSocialOpen] = useState(false)
+  const socialRef = useRef()
 
-  function connectMeta() {
-    window.location.href = `${BACKEND}/auth/social/meta/connect`
-  }
+  useEffect(() => {
+    if (!socialOpen) return
+    const handler = (e) => {
+      if (socialRef.current && !socialRef.current.contains(e.target)) setSocialOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [socialOpen])
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
-        <div style={styles.logoCard}>
-          <img src={logo} alt="Top Dawg Moving LLC" style={styles.logo} />
-        </div>
-        <h1 style={styles.company}>Top Dawg Moving LLC</h1>
-        <p style={styles.tagline}>Your Business. Your Dashboard.</p>
+    <>
+      <style>{css}</style>
+      <div className="home">
+
+        <header className="home-hdr">
+          <div className="h-brand">
+            <img className="h-logo" src="/logo.png" alt="Top Dawg" />
+            <div style={{display:'flex',alignItems:'center',gap:6}}>
+              <span className="h-wordmark">Top Dawg Moving LLC</span>
+              <span className="h-os">OS</span>
+            </div>
+          </div>
+          <div className="h-div" />
+        </header>
+
+        <main className="home-main">
+          <div className="sec-lbl">Select a workflow</div>
+
+          <div className="feature-grid">
+
+            {/* Digital Presence — split click card */}
+            <div className="fb-wrap dp-wrap" ref={socialRef}>
+              <div
+                className={"fb dp-card" + (socialOpen ? " pay-open" : "")}
+                onClick={() => { navigate('/social'); setSocialOpen(false) }}
+              >
+                <div className="fb-ic">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="6.5" stroke="#c9a227" strokeWidth="1.4"/>
+                    <path d="M8 1.5C8 1.5 5.5 4 5.5 8s2.5 6.5 2.5 6.5M8 1.5C8 1.5 10.5 4 10.5 8S8 14.5 8 14.5M1.5 8h13" stroke="#c9a227" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="fb-label">Digital Presence</div>
+                <div className="fb-desc">Facebook · Instagram</div>
+                <button
+                  className="dp-chevron-btn"
+                  onClick={(e) => { e.stopPropagation(); setSocialOpen(o => !o) }}
+                >
+                  {socialOpen ? '▲' : '▼'}
+                </button>
+              </div>
+              {socialOpen && (
+                <div className="dp-dropdown">
+                  <div className="fb-sub" onClick={() => { navigate('/social'); setSocialOpen(false) }}>
+                    <div className="fb-sub-ic">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a227">
+                        <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="fb-sub-name">Facebook</div>
+                      <div className="fb-sub-desc">Top Dawg Moving LLC</div>
+                    </div>
+                  </div>
+                  <div className="fb-sub" onClick={() => { navigate('/social'); setSocialOpen(false) }}>
+                    <div className="fb-sub-ic">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <defs><linearGradient id="ig2" x1="0" y1="16" x2="16" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#F9A825"/><stop offset="40%" stopColor="#E1306C"/><stop offset="100%" stopColor="#833AB4"/></linearGradient></defs>
+                        <rect x="1" y="1" width="14" height="14" rx="4" stroke="url(#ig2)" strokeWidth="1.4"/>
+                        <circle cx="8" cy="8" r="2.8" stroke="url(#ig2)" strokeWidth="1.4"/>
+                        <circle cx="11.8" cy="4.2" r="0.8" fill="url(#ig2)"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="fb-sub-name">Instagram</div>
+                      <div className="fb-sub-desc">@topdawgmoving</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="fb soon">
+              <span className="soon-badge">Soon</span>
+              <div className="fb-ic">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="#50506A" strokeWidth="1.4"/><path d="M1 6.5h14" stroke="#50506A" strokeWidth="1.4"/><path d="M4 9.5h2M4 11h2" stroke="#50506A" strokeWidth="1.4" strokeLinecap="round"/></svg>
+              </div>
+              <div className="fb-label">Invoicing</div>
+              <div className="fb-desc">Jobs &amp; billing</div>
+            </div>
+
+            <div className="fb soon">
+              <span className="soon-badge">Soon</span>
+              <div className="fb-ic">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#50506A" strokeWidth="1.4"/><path d="M8 5v3l2 2" stroke="#50506A" strokeWidth="1.4" strokeLinecap="round"/></svg>
+              </div>
+              <div className="fb-label">Scheduling</div>
+              <div className="fb-desc">Crew &amp; job calendar</div>
+            </div>
+
+            <div className="fb soon">
+              <span className="soon-badge">Soon</span>
+              <div className="fb-ic">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 2H3a1 1 0 00-1 1v7a1 1 0 001 1h2v2.5L8.5 11H13a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="#50506A" strokeWidth="1.4" strokeLinejoin="round"/></svg>
+              </div>
+              <div className="fb-label">Client Portal</div>
+              <div className="fb-desc">Live job updates</div>
+            </div>
+
+          </div>
+        </main>
       </div>
-
-      <div style={styles.grid}>
-        <div style={styles.card} onClick={() => navigate('/social')}>
-          <div style={styles.cardIcon}>📊</div>
-          <h2 style={styles.cardTitle}>Digital Presence</h2>
-          <p style={styles.cardSub}>Facebook · Instagram analytics</p>
-          <button style={styles.primaryBtn} onClick={e => { e.stopPropagation(); navigate('/social') }}>
-            View Dashboard
-          </button>
-        </div>
-
-        <div style={styles.card}>
-          <div style={styles.cardIcon}>📦</div>
-          <h2 style={styles.cardTitle}>Jobs</h2>
-          <p style={styles.cardSub}>Coming soon</p>
-        </div>
-
-        <div style={styles.card}>
-          <div style={styles.cardIcon}>💰</div>
-          <h2 style={styles.cardTitle}>Invoicing</h2>
-          <p style={styles.cardSub}>Coming soon</p>
-        </div>
-      </div>
-
-      <footer style={styles.footer}>
-        Top Dawg OS &mdash; Built for Top Dawg Moving LLC
-      </footer>
-    </div>
+    </>
   )
-}
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '40px 20px',
-    background: 'linear-gradient(160deg, #0d0d0d 0%, #1a1a1a 100%)',
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  logoCard: {
-    background: 'rgba(255,255,255,0.94)',
-    borderRadius: 20,
-    padding: '24px 32px',
-    marginBottom: 20,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,162,39,0.3)',
-    backdropFilter: 'blur(8px)',
-  },
-  logo: {
-    width: 260,
-    height: 'auto',
-    display: 'block',
-  },
-  company: {
-    fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: 36,
-    letterSpacing: 3,
-    color: '#ffffff',
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  tagline: {
-    fontSize: 14,
-    color: '#c9a227',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: 20,
-    width: '100%',
-    maxWidth: 840,
-  },
-  card: {
-    background: '#1a1a1a',
-    border: '1px solid #2a2a2a',
-    borderRadius: 16,
-    padding: 28,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-    cursor: 'default',
-    transition: 'border-color 0.2s',
-  },
-  cardIcon: {
-    fontSize: 28,
-    marginBottom: 4,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 700,
-    color: '#ffffff',
-  },
-  cardSub: {
-    fontSize: 13,
-    color: '#888',
-    marginBottom: 8,
-  },
-  primaryBtn: {
-    marginTop: 'auto',
-    background: '#c9a227',
-    color: '#0d0d0d',
-    fontWeight: 700,
-    fontSize: 13,
-    padding: '10px 18px',
-    borderRadius: 8,
-    letterSpacing: 0.5,
-    alignSelf: 'flex-start',
-  },
-  footer: {
-    marginTop: 'auto',
-    paddingTop: 48,
-    fontSize: 12,
-    color: '#444',
-    textAlign: 'center',
-  },
 }
